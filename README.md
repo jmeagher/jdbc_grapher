@@ -1,4 +1,4 @@
-impala_grapher
+jdbc_grapher
 ==============
 
-Provides a mechanism for graphing the results of Impala queries
+Provides a mechanism for graphing the results of JDBC queries
