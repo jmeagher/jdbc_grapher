@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <title>Super fancy graphing</title>
+    <script type="text/javascript" src="//www.google.com/jsapi"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  </head>
+  <body>
+    <div id="sql_form">
+      Sql goes here:<textarea id="sql">select purchase_day, sum(revenue_at_offer_end_usd) revenue, count(*) purchases
+      from watson_bisum_purchases
+      where purchase_day >= '2013-11-01'
+      group by purchase_day
+      order by purchase_day limit 1000
+  </textarea>
+      <button onclick="graphit()" >Graph it</button>
+    </div>
+
+    <div id="graph" width="100%" height="500" >Graph will go here, be patient<div>
+  </body>
+
+  <script type="text/javascript">
+  google.load('visualization', '1', {packages: ['corechart']});
+
+  function graphit() {
+
+    $.getJSON( "/jdbc/get_data?", {'sql': $("#sql").val()}, function(json) {
+        var data = new google.visualization.DataTable(json)
+        var chart = new google.visualization.AreaChart(document.getElementById("graph"));
+        chart.draw(data, {
+          title: "testing graphing",
+          width: 900,
+          height: 500
+          });
+        });
+  }
+  </script>
+</html>
+
+

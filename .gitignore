@@ -12,6 +12,9 @@ test/tmp
 test/version_tmp
 tmp
 
+# JRuby things
+lib/jar
+
 # YARD artifacts
 .yardoc
 _yardoc
