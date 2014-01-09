@@ -14,6 +14,7 @@
   </textarea>
       <button onclick="graphit()" >Graph it</button>
     </div>
+    <div id="status">Waiting for a query...</div>
 
     <div id="graph" width="100%" height="500" >Graph will go here, be patient<div>
   </body>
@@ -23,7 +24,9 @@
 
   function graphit() {
 
+    $("#status").html("Going to get some data, please be patient and don't click any buttons");
     $.getJSON( "/jdbc/get_data?", {'sql': $("#sql").val()}, function(json) {
+        $("#status").html("Got data, doing some charting");
         var data = new google.visualization.DataTable(json)
         var chart = new google.visualization.AreaChart(document.getElementById("graph"));
         chart.draw(data, {
@@ -31,6 +34,7 @@
           width: 900,
           height: 500
           });
+        $("#status").html("Thank you, come again!");
         });
   }
   </script>

@@ -71,22 +71,4 @@ class JdbcController < ApplicationController
     the_type
   end
 
-    def get_columns(result)
-
-    cols = result.getMetaData()
-    result = []
-    cols.getColumnCount().times do |i|
-      i += 1 # columns are 1-based
-      col = {
-        :name => cols.getColumnName(i),
-        :type => cols.getColumnType(i),
-        :label => cols.getColumnLabel(i)
-        # ... more stuff is available
-      }
-      result << col
-    end
-    result
-  end
-
-
 end
