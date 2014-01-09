@@ -29,12 +29,17 @@ $(document).ready(function() {
 
   $.getJSON( "/jdbc/get_data?" + paramString, function(json) {
       $("#status").html("Got data, doing some charting");
-      var data = new google.visualization.DataTable(json)
-      console.log("new google.visualization." + chartType + "(document.getElementById('graph')");
-      var chart = eval("new google.visualization." + chartType + "(document.getElementById('graph'))");
-      chart.draw(data, chartOptions );
-      $("#status").html("Enjoy your graph");
-      $("#status").hide();
+      if (json.status == 'success') {
+        var data = new google.visualization.DataTable(json)
+        console.log("new google.visualization." + chartType + "(document.getElementById('graph')");
+        var chart = eval("new google.visualization." + chartType + "(document.getElementById('graph'))");
+        chart.draw(data, chartOptions );
+        $("#status").html("Enjoy your graph");
+        $("#status").hide();
+      } else {
+        $("#status").html("Error running query: " + json.message);
+      }
+
       });
 });
 </script>

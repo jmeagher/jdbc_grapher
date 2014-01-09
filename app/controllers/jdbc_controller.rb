@@ -7,17 +7,34 @@ class JdbcController < ApplicationController
 
     sql = params['sql']
 
+    if !(sql =~ /^select /i)
+      render :json => to_error("Invalid SQL, only select is allowed") 
+      return
+    end
+
+
     # TODO: move this to configuration
     url = 'jdbc:hive2://impala-server:21050/default;auth=noSasl'
     conn = java.sql.DriverManager.get_connection(url, "dobby","")
 
-    statement = conn.create_statement
-    rs = statement.execute_query( sql )
-    result = to_google_data(rs)
-
-    render :json => result.to_json
+    begin
+      statement = conn.create_statement
+      rs = statement.execute_query( sql )
+      result = to_google_data(rs)
+      render :json => result.to_json
+    rescue => e
+      render :json => to_error(e.getMessage())
+    end
 
   end
+
+  def to_error(error)
+    {
+      :status => "error",
+      :message => error
+    }
+  end
+
 
   # TODO: Move this somewhere better
   def to_google_data(result_set)
@@ -50,7 +67,8 @@ class JdbcController < ApplicationController
       rows << { :c => row }
     end
 
-    ret = {
+    {
+      :status => "success",
       :cols => cols,
       :rows => rows
     }

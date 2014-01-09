@@ -34,6 +34,7 @@ function graphit() {
   var graphUrl = "/just_the_graph.html?" + paramString;
   $("#graphUrl").val(baseUrl + graphUrl);
   $("#editUrl").val(baseUrl + "/graph.html?" + paramString);
+  $("#graph").html("Graph, coming soon");
   $("#graph").html("<iframe width='100%' height='100%' src='" + graphUrl + "'></iframe>");
 }
 
