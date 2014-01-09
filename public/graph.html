@@ -1,7 +1,6 @@
 <html>
   <head>
     <title>Super fancy graphing</title>
-    <script type="text/javascript" src="//www.google.com/jsapi"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
   </head>
   <body>
@@ -12,30 +11,28 @@
       group by purchase_day
       order by purchase_day limit 1000
   </textarea>
+  <input type="text" id="chartType" value='AreaChart'/>
+  <input type="text" id="options" value='{name:"test" , width:"100%", height : "100%"}'/>
       <button onclick="graphit()" >Graph it</button>
     </div>
-    <div id="status">Waiting for a query...</div>
 
+    <input type="text" id="graphUrl" value='Graph url will go here'/>
     <div id="graph" width="100%" height="500" >Graph will go here, be patient<div>
   </body>
 
   <script type="text/javascript">
-  google.load('visualization', '1', {packages: ['corechart']});
 
   function graphit() {
-
-    $("#status").html("Going to get some data, please be patient and don't click any buttons");
-    $.getJSON( "/jdbc/get_data?", {'sql': $("#sql").val()}, function(json) {
-        $("#status").html("Got data, doing some charting");
-        var data = new google.visualization.DataTable(json)
-        var chart = new google.visualization.AreaChart(document.getElementById("graph"));
-        chart.draw(data, {
-          title: "testing graphing",
-          width: 900,
-          height: 500
-          });
-        $("#status").html("Thank you, come again!");
-        });
+    var params = {
+           sql: $("#sql").val(),
+           options: $("#options").val(),
+           chartType: $("#chartType").val()
+    };
+    var paramString = $.param(params).replace(/'/g, "%27");
+    console.log(paramString);
+    var url = "just_the_graph.html?" + paramString;
+    $("#graphUrl").val(url);
+    $("#graph").html("<iframe width='100%' height='100%' src='" + url + "'></iframe>");
   }
   </script>
 </html>
