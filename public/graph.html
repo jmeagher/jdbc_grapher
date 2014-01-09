@@ -1,40 +1,142 @@
 <html>
   <head>
     <title>Super fancy graphing</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="helpers.js"></script>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript">
+
+function graphit() {
+  var params = {
+         sql: $("#sql").val(),
+         options: $("#options").val(),
+         chartType: $("#chartType").val(),
+         autorun: true
+  };
+  var paramString = $.param(params).replace(/'/g, "%27");
+  console.log(paramString);
+
+  var pathArray = window.location.href.split( '/' );
+  var protocol = pathArray[0];
+  var host = pathArray[2];
+  var baseUrl = protocol + '//' + host;
+
+  var graphUrl = "/just_the_graph.html?" + paramString;
+  $("#graphUrl").val(baseUrl + graphUrl);
+  $("#editUrl").val(baseUrl + "/graph.html?" + paramString);
+  $("#graph").html("<iframe width='100%' height='100%' src='" + graphUrl + "'></iframe>");
+}
+
+$(document).ready(function() {
+    // Check for any incoming parameters to preload the form
+    setFormFromParam("sql","sql");
+    setFormFromParam("options","options");
+    setFormFromParam("chartType","chartType");
+
+    if(getQueryVariable("autorun")) {
+      graphit();
+    }
+});
+
+    </script>
   </head>
   <body>
-    <div id="sql_form">
-      Sql goes here:<textarea id="sql">select purchase_day, sum(revenue_at_offer_end_usd) revenue, count(*) purchases
-      from watson_bisum_purchases
-      where purchase_day >= '2013-11-01'
-      group by purchase_day
-      order by purchase_day limit 1000
-  </textarea>
-  <input type="text" id="chartType" value='AreaChart'/>
-  <input type="text" id="options" value='{name:"test" , width:"100%", height : "100%"}'/>
-      <button onclick="graphit()" >Graph it</button>
+    <div class="container">
+
+      <div class="row">
+
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label for="sql">Query to graph</label>
+            <textarea id="sql" class="form-control" rows="8">
+select purchase_day, sum(revenue_at_offer_end_usd) revenue, count(*) purchases
+from watson_bisum_purchases
+where purchase_day >= '2013-11-01'
+group by purchase_day
+order by purchase_day limit 1000
+            </textarea>
+            <p class="help-block">The query and chart type need to match up.
+              See <a href="https://developers.google.com/chart/interactive/docs/gallery">Google's documentation</a> 
+              for details on the different types.
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label for="graphUrl">Url to graph</label>
+            <input type="text" id="graphUrl" value='Graph url will go here' class="form-control"/>
+            <p class="help-block">Share this with others to just show the graph </p>
+          </div>
+
+          <div class="form-group">
+            <label for="editUrl">Url for editing</label>
+            <input type="text" id="editUrl" value='Editing url will go here' class="form-control"/>
+            <p class="help-block">Share this with others to allow editing </p>
+          </div>
+
+        </div>
+
+        <div class="col-sm-6">
+
+          <div class="form-group">
+            <label for="chartType">Type of chart to make</label>
+            <select id="chartType" class="form-control">
+              <option>LineChart</option>
+              <option>AreaChart</option>
+              <option>BarChart</option>
+              <option>BubbleChart</option>
+              <option>CandlestickChart</option>
+              <option>ColumnChart</option>
+              <option>MotionChart</option>
+              <option>PieChart</option>
+              <option>ScatterChart</option>
+              <option>TreeMap</option>
+              <option>Table</option>
+            </select>
+            <p class="help-block">Depending on what chart type is picked the rules for column types change.
+            See <a href="https://developers.google.com/chart/interactive/docs/gallery">Google's documentation</a> 
+            for details.  
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label for="chartType">Options for the chart</label>
+            <textarea id="options" class="form-control" rows="3">
+{ name:"test" , width:"100%", height : 600,
+  series:[{ targetAxisIndex: 0 },
+          { targetAxisIndex: 1 } ] }
+            </textarea>
+            <p class="help-block">The query and chart type need to match up.
+              See <a href="https://developers.google.com/chart/interactive/docs/gallery">Google's documentation</a> 
+              for documentation on all the options available when building the charts.
+            </p>
+          </div>
+
+          <button onclick="graphit()" class="btn btn-primary" type="button">Graph it</button>
+
+        </div>
+
+      </div>
+
+      <div class="row">
+        <div class="col-lg-12">
+          <div id="graph" width="100%" height="500" >Graph will go here, be patient<div>
+        </div>
+      </div>
+
     </div>
 
-    <input type="text" id="graphUrl" value='Graph url will go here'/>
-    <div id="graph" width="100%" height="500" >Graph will go here, be patient<div>
   </body>
 
-  <script type="text/javascript">
-
-  function graphit() {
-    var params = {
-           sql: $("#sql").val(),
-           options: $("#options").val(),
-           chartType: $("#chartType").val()
-    };
-    var paramString = $.param(params).replace(/'/g, "%27");
-    console.log(paramString);
-    var url = "just_the_graph.html?" + paramString;
-    $("#graphUrl").val(url);
-    $("#graph").html("<iframe width='100%' height='100%' src='" + url + "'></iframe>");
-  }
-  </script>
 </html>
 
 
